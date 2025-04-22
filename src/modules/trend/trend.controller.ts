@@ -1,13 +1,20 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { EmailService } from '../email/email.serivce';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { TrendService } from './trend.service';
+import { CreateTrendDto } from './dto/create-trend.dto';
 
 @Controller('trends')
 export class TrendController {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly emailService: EmailService,
-  ) {}
+  constructor(private readonly trendService: TrendService) {}
+
+  @Get()
+  async getAllTrends() {
+    return this.trendService.getAllTrends();
+  }
+
+  @Get(':topic')
+  async getTrend(@Param('topic') topic: string) {
+    return this.trendService.getTrendByTopic(topic);
+  }
 
   @Post('notify')
   async notifyByTopic(
@@ -19,35 +26,11 @@ export class TrendController {
     },
   ) {
     const { topic, summary, url } = body;
+    return this.trendService.notifyUsersByTopic(topic, summary, url);
+  }
 
-    const users = await this.prisma.user.findMany({
-      where: {
-        preferences: {
-          some: { topic },
-        },
-      },
-    });
-
-    const sendPromises = users.map((user) =>
-      this.emailService.sendTrendEmail(
-        user.email,
-        `🔥 ${topic.toUpperCase()} is Trending!`,
-        `
-          <h2>🔥 ${topic} is trending now!</h2>
-          <p>${summary}</p>
-          <p><a href="${
-            url || 'https://goodtok.ai'
-          }">Click here to read more</a></p>
-        `,
-      ),
-    );
-
-    await Promise.all(sendPromises);
-
-    return {
-      sent: users.length,
-      topic,
-      recipients: users.map((u) => u.email),
-    };
+  @Post()
+  async createTrend(@Body() dto: CreateTrendDto) {
+    return this.trendService.create(dto);
   }
 }

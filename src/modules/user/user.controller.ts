@@ -7,6 +7,8 @@ import {
 } from '../../common/constants/user.routes';
 import { NotificationService } from '../notifications/notification.service';
 import { EmailService } from '../email/email.serivce';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller(USER_ROUTES.ROOT)
 export class UserController {
@@ -21,8 +23,8 @@ export class UserController {
   }
 
   @Post(USER_ROUTES.CREATE)
-  async createUser(@Body(USER_BODY_KEYS.EMAIL) email: string) {
-    return this.userService.createUser(email);
+  async createUser(@Body() body: CreateUserDto) {
+    return this.userService.createUser(body.email);
   }
 
   @Get(USER_ROUTES.PREFERENCES)
@@ -73,7 +75,7 @@ export class UserController {
   @Patch(':id')
   async updateUser(
     @Param(USER_PARAM_KEYS.ID) userId: string,
-    @Body() data: Partial<{ email: string }>,
+    @Body() data: UpdateUserDto,
   ) {
     return this.userService.updateUser(userId, data);
   }

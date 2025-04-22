@@ -34,3 +34,13 @@ model PushSubscription {
 
   user       User     @relation(fields: [userId], references: [id])
 }
+
+model Trend {
+  id        String   @id @default(uuid())
+  topic     String   @unique
+  title     String
+  summary   String
+  url       String
+  createdAt DateTime @default(now())
+}
+
