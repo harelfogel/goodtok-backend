@@ -5,6 +5,7 @@ import { NotificationModule } from './modules/notifications/notification.module'
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './modules/email/email.module';
 import { TrendModule } from './modules/trend/trend.module';
+import { McpModule } from './modules/mcp/mcp.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TrendModule } from './modules/trend/trend.module';
     NotificationModule,
     EmailModule,
     TrendModule,
+    McpModule,
   ],
 })
 export class AppModule {}
